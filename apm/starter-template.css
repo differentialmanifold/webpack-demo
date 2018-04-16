@@ -1,0 +1,19 @@
+body {
+  padding-top: 5rem;
+}
+.starter-template {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+.marker-arrowhead, .link-tool {
+  display: none;
+}
+.marker-vertex, .marker-vertex:hover {
+  fill: #45484d;
+}
+
+#paperwrap {
+  text-align: center;
+  height: 800px;
+  overflow: scroll;
+}
