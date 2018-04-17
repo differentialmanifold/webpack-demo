@@ -1,15 +1,21 @@
-var path = require('path')
-var webpack = require('webpack')
+const fs = require('fs')
+const path = require('path')
+const webpack = require('webpack')
 
 module.exports = {
-  entry: {
-    main: './src/main/index.js',
-    example1: './src/example1/index.js',
-    todoList: './src/todoList/index.js'
-  },
+  entry: fs.readdirSync(path.join(__dirname, 'src')).reduce((entries, dir) => {
+    const fullDir = path.join(__dirname, 'src', dir)
+    const entryPath = path.join(fullDir, 'index.js')
+    if (fs.statSync(fullDir).isDirectory() && fs.existsSync(entryPath)) {
+      entries[dir] = entryPath
+    }
+
+    return entries
+  }, {}),
   output: {
-    path: path.resolve(__dirname, './dist'),
+    path: path.join(__dirname, 'dist'),
     publicPath: '/dist/',
+    chunkFilename: '[id].chunk.js',
     filename: '[name].build.js'
   },
   module: {
@@ -58,7 +64,17 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map'
+  devtool: '#eval-source-map',
+
+  plugins: [
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'shared',
+      filename: 'shared.js'
+    }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+    })
+  ]
 }
 
 if (process.env.NODE_ENV === 'production') {
