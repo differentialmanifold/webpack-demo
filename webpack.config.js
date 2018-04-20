@@ -1,21 +1,15 @@
 const fs = require('fs')
 const path = require('path')
 const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-  entry: fs.readdirSync(path.join(__dirname, 'src')).reduce((entries, dir) => {
-    const fullDir = path.join(__dirname, 'src', dir)
-    const entryPath = path.join(fullDir, 'index.js')
-    if (fs.statSync(fullDir).isDirectory() && fs.existsSync(entryPath)) {
-      entries[dir] = entryPath
-    }
-
-    return entries
-  }, {}),
+  entry: {
+    app: './src/main.js'
+  },
   output: {
     path: path.join(__dirname, 'dist'),
-    publicPath: '/dist/',
-    chunkFilename: '[id].chunk.js',
+    publicPath: '/',
     filename: '[name].build.js'
   },
   module: {
@@ -42,7 +36,7 @@ module.exports = {
         exclude: /node_modules/
       },
       {
-        test: /\.(png|jpg|gif|svg)$/,
+        test: /\.(eot|woff|woff2|ttf|png|jpg|gif|svg)$/,
         loader: 'file-loader',
         options: {
           name: '[name].[ext]?[hash]'
@@ -52,7 +46,8 @@ module.exports = {
   },
   resolve: {
     alias: {
-      'vue$': 'vue/dist/vue.esm.js'
+      'vue$': 'vue/dist/vue.esm.js',
+      '@': path.join(__dirname, 'src')
     },
     extensions: ['*', '.js', '.vue', '.json']
   },
@@ -73,6 +68,11 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'index.html',
+      inject: true
     })
   ]
 }
